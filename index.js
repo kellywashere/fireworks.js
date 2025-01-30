@@ -17,7 +17,7 @@ window.onload = function () {
 }
 
 
-function gameloop() {
+function gameloop(timestamp_ms) {
 	let w = canvas.width;
 	let h = canvas.height;
 
