@@ -9,12 +9,13 @@ let gravity; // g
 
 const nrParticles = 80; // per explosion
 const duration = 2.0;   // duration of particles
+const time_between = 0.2; // average, is randomized a bit
+let time_till_next_explosion;
 
 let fireworks = []; // all fireworks
 // firework: { particles, color, intensity }
 // particles: { posx, posy, vx, vy }
 
-let time_till_next_explosion;
 
 window.onload = function () {
 	// Init canvas size
@@ -26,9 +27,13 @@ window.onload = function () {
 	gravity = canvas.height * 0.2;
 	time_till_next_explosion = 11; // countdown
 
+	time_till_next_explosion = 11.0;
+	
+	/*
 	let ps = initParticles(nrParticles, canvas.width/2, canvas.height/2, canvas.height * 0.15);
 	fw = { particles: ps, color: randomColor(), intensity: 1 };
 	fireworks.push(fw);
+	*/
 
 	requestAnimationFrame(gameloop);
 }
@@ -48,14 +53,14 @@ function gameloop(timestamp_ms) {
 		renderFireworks();
 
 	
-		//if (fireworks.length == 0) {
+		if (fireworks.length == 0) {
 			ctx.font = Math.round(canvas.height/30) + "px Arial";
 			ctx.fillStyle = "white";
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
-			//ctx.fillText(Math.floor(time_till_next_explosion).toString(), canvas.width/2, canvas.height/2);
-			ctx.fillText(Math.floor(abstime_s).toString(), canvas.width/2, canvas.height/2);
-		//}
+			ctx.fillText(Math.floor(time_till_next_explosion).toString(), canvas.width/2, canvas.height/2);
+			//ctx.fillText(Math.floor(abstime_s).toString(), canvas.width/2, canvas.height/2);
+		}
 	} else {
 		starttime_ms = timestamp_ms;
 	}
@@ -70,15 +75,28 @@ function updateFireworks(dt) {
 	let ii = fireworks.length;
 	while (ii--) {
 		// firework: { particles, color, intensity }
-		fw = fireworks[ii];
+		let fw = fireworks[ii];
 		updateParticles(fw.particles, dt);
 		fw.intensity -= dt/duration;
-		/*
 		if (fw.intensity <= 0) {
 			fireworks.splice(ii, 1);
 		}
-  		*/
 	}
+	
+	time_till_next_explosion -= dt;
+	if (time_till_next_explosion <= 0) {
+		let w = canvas.width;
+		let h = canvas.height;
+
+		let x = Math.random() * w;
+		let y = Math.random() * h;
+		let scalev = h * (0.15 + 0.15*Math.random());
+		let ps = initParticles(nrParticles, x, y, scalev);
+		fw = { particles: ps, color: randomColor(), intensity: 1 };
+		fireworks.push(fw);
+		time_till_next_explosion = time_between * (0.7 + 0.6 * Math.random());
+	}
+	
 }
 
 function renderFireworks() {
@@ -103,25 +121,7 @@ function renderFireworks() {
 	}
 }
 
-/*
-function update(dt) {
-	ps = particles || [];
-	updateParticles(ps, dt);
-}
 
-function render() {
-	let w = canvas.width;
-	let h = canvas.height;
-	let radius = h / 300;
-
-	ctx.fillStyle = "red";
-	for (p of particles) {
-		ctx.beginPath();
-		ctx.arc(p.posx, p.posy, radius, 0, 2 * Math.PI);
-		ctx.fill();
-	}
-}
-*/
 
 function initParticles(n, x, y, scalev) {
 	// velocity is randomized point on sphere, see: https://mathworld.wolfram.com/SpherePointPicking.html
