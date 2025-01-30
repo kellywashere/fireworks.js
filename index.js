@@ -8,7 +8,10 @@ let abstime_s = 0;     // abs time in s
 let gravity; // g
 
 const nrParticles = 80; // per explosion
-let particles = null;
+const duration = 2.0;   // duration of particles
+
+let fireworks = []; // all fireworks
+// firework: { particles, color, intensity }
 // particles: { posx, posy, vx, vy }
 
 let time_till_next_explosion;
@@ -23,8 +26,10 @@ window.onload = function () {
 	gravity = canvas.height * 0.2;
 	time_till_next_explosion = 11; // countdown
 
-	particles = initParticles(nrParticles, canvas.width/2, canvas.height/2, canvas.height * 0.15);
-	
+	let ps = initParticles(nrParticles, canvas.width/2, canvas.height/2, canvas.height * 0.15);
+	fw = { particles: ps, color: randomColor(), intensity: 1 };
+	fireworks.push(fw);
+
 	requestAnimationFrame(gameloop);
 }
 
@@ -39,24 +44,13 @@ function gameloop(timestamp_ms) {
 		dt = (timestamp_ms - prevtime_ms) * 1e-3; // dt in ms
 		abstime_s = (timestamp_ms - starttime_ms) * 1e-3;
 
-		//updateFireworks(dt);
-		//renderFireworks();
+		updateFireworks(dt);
+		renderFireworks();
 
-		update(dt);
-		render();
-
-
-
-		
-		color = randomColor();
-		let r = Math.round(color.r * 255);
-		let g = Math.round(color.g * 255);
-		let b = Math.round(color.b * 255);
-		ctx.fillStyle = "rgb("+r+","+g+","+b+")";
-		
+	
 		//if (fireworks.length == 0) {
 			ctx.font = Math.round(canvas.height/30) + "px Arial";
-			//ctx.fillStyle = "white";
+			ctx.fillStyle = "white";
 			ctx.textAlign = "center";
 			ctx.textBaseline = "middle";
 			//ctx.fillText(Math.floor(time_till_next_explosion).toString(), canvas.width/2, canvas.height/2);
@@ -71,6 +65,45 @@ function gameloop(timestamp_ms) {
 	requestAnimationFrame(gameloop);
 }
 
+function updateFireworks(dt) {
+	// see: https://stackoverflow.com/questions/9882284/looping-through-array-and-removing-items-without-breaking-for-loop
+	let ii = fireworks.length;
+	while (ii--) {
+		// firework: { particles, color, intensity }
+		fw = fireworks[ii];
+		updateParticles(fw.particles, dt);
+		fw.intensity -= dt/duration;
+		/*
+		if (fw.intensity <= 0) {
+			fireworks.splice(ii, 1);
+		}
+  		*/
+	}
+}
+
+function renderFireworks() {
+	let w = canvas.width;
+	let h = canvas.height;
+	let radius = h / 300;
+	
+	for (fw of fireworks) {
+		let intens = fw.intensity;
+		let rr = radius * intens;
+		if (rr < 0) continue;
+		// firework: { particles, color, intensity }
+		let r = Math.round(fw.color.r * intens * 255);
+		let g = Math.round(fw.color.g * intens * 255);
+		let b = Math.round(fw.color.b * intens * 255);
+		ctx.fillStyle = "rgb("+r+","+g+","+b+")";
+		for (p of fw.particles) {
+			ctx.beginPath();
+			ctx.arc(p.posx, p.posy, rr, 0, 2 * Math.PI);
+			ctx.fill();
+		}
+	}
+}
+
+/*
 function update(dt) {
 	ps = particles || [];
 	updateParticles(ps, dt);
@@ -88,6 +121,7 @@ function render() {
 		ctx.fill();
 	}
 }
+*/
 
 function initParticles(n, x, y, scalev) {
 	// velocity is randomized point on sphere, see: https://mathworld.wolfram.com/SpherePointPicking.html
