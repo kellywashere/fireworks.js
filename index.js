@@ -19,9 +19,7 @@ let time_till_next_explosion;
 
 window.onload = function () {
 	// Init canvas size
-	//const dpr = window.devicePixelRatio || 1;
-	
-	const dpr = 2.5;
+	const dpr = window.devicePixelRatio || 1;
 	const w = window.innerWidth * dpr;
 	const h = window.innerHeight * dpr;
 	
