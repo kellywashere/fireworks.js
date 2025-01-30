@@ -19,7 +19,9 @@ let time_till_next_explosion;
 
 window.onload = function () {
 	// Init canvas size
-	const dpr = window.devicePixelRatio || 1;
+	//const dpr = window.devicePixelRatio || 1;
+	
+	const dpr = 2.5;
 	const w = window.innerWidth * dpr;
 	const h = window.innerHeight * dpr;
 	
@@ -31,7 +33,7 @@ window.onload = function () {
 		
 	// Init physics, particles
 	gravity = h * 0.2;
-	time_till_next_explosion = time_between;
+	time_till_next_explosion = 11; // countdown
 	
 	requestAnimationFrame(gameloop);
 }
@@ -120,6 +122,14 @@ function gameloop(timestamp_ms) {
 
 		updateFireworks(dt);
 		renderFireworks();
+		
+		if (fireworks.length == 0) {
+			ctx.font = Math.round(canvas.height/30) + "px Arial";
+			ctx.fillStyle = "white";
+			ctx.textAlign = "center";
+			ctx.textBaseline = "middle";
+			ctx.fillText(Math.floor(time_till_next_explosion).toString(), canvas.width/2, canvas.height/2);
+		}
 	} else {
 		starttime_ms = timestamp_ms;
 	}
