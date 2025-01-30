@@ -8,10 +8,10 @@ window.onload = function () {
 	canvas.width = window.innerWidth * dpr;
 	canvas.height = window.innerHeight * dpr;
 	
-	//requestAnimationFrame(gameloop);
+	requestAnimationFrame(gameloop);
 }
 
-/*
+
 function gameloop() {
 	let w = canvas.width;
 	let h = canvas.height;
@@ -23,4 +23,4 @@ function gameloop() {
 	ctx.fill();
 	requestAnimationFrame(gameloop);
 }
-*/
+
