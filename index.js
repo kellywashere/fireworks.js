@@ -24,7 +24,7 @@ window.onload = function () {
 	canvas.height = window.innerHeight * dpr;
 	
 	// Init physics, particles
-	gravity = h * 0.2;
+	gravity = canvas.height * 0.2;
 	time_till_next_explosion = 11; // countdown
 	
 	requestAnimationFrame(gameloop);
@@ -108,6 +108,9 @@ function renderFireworks() {
 }
 
 function gameloop() {
+	let w = canvas.width;
+	let h = canvas.height;
+
 	ctx.clearRect(0,0, w, h);
 	ctx.fillStyle = "red";
 	ctx.beginPath();
