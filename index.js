@@ -1,5 +1,5 @@
-let canvas;
-let ctx;
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
 let prevtime_ms = null; // previous timestamp gameloop
 let starttime_ms = null;
@@ -20,15 +20,9 @@ let time_till_next_explosion;
 window.onload = function () {
 	// Init canvas size
 	const dpr = window.devicePixelRatio || 1;
-	const w = window.innerWidth * dpr;
-	const h = window.innerHeight * dpr;
+	canvas.width = window.innerWidth * dpr;
+	canvas.height = window.innerHeight * dpr;
 	
-	canvas = document.getElementById("canvas");
-	ctx = canvas.getContext("2d");
-	
-	canvas.width  = w;
-	canvas.height = h;
-		
 	// Init physics, particles
 	gravity = h * 0.2;
 	time_till_next_explosion = 11; // countdown
@@ -113,6 +107,16 @@ function renderFireworks() {
 	}
 }
 
+function gameloop() {
+	ctx.clearRect(0,0, w, h);
+	ctx.fillStyle = "red";
+	ctx.beginPath();
+	ctx.arc(canvas.width/2, canvas.height/2, canvas.height/4, 0, 2 * Math.PI);
+	ctx.fill();
+	requestAnimationFrame(gameloop);
+}
+
+/*
 function gameloop(timestamp_ms) {
 	if (starttime_ms) {
 		dt = (timestamp_ms - prevtime_ms) * 1e-3; // dt in ms
@@ -136,6 +140,7 @@ function gameloop(timestamp_ms) {
 
 	requestAnimationFrame(gameloop);
 }
+*/
 
 function randomColor() {
 	// hsl: h is random, s = 1, l=0.5;
